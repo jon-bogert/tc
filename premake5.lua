@@ -25,12 +25,15 @@ project "core"
     includedirs
     {
         "%{prj.name}/include",
-        "%{prj.name}/src"
+        "%{prj.name}/include/jed",
+        "%{prj.name}/src",
+        "%{prj.name}/ext"
     }
 
     defines
     {
-        "YAML_CPP_STATIC_DEFINE"
+        "YAML_CPP_STATIC_DEFINE",
+        "DATETIME_STATIC"
     }
 
     links

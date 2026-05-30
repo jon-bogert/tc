@@ -6,7 +6,7 @@
 #include "Timecard.h"
 #include "Operations.h"
 
-#define VER_NUM "1.0.2"
+#define VER_NUM "1.1"
 
 int main (int argc, char* argv[])
 {
@@ -79,7 +79,7 @@ int main (int argc, char* argv[])
         }
         if (strcmp(argv[2], "calc") == 0)
         {
-            Op::PeriodCalc(timecard, config);
+            Op::PeriodCalc(timecard, config, argc, argv);
             return 0;
         }
     }

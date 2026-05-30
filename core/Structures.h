@@ -4,22 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-struct Date
-{
-	uint16_t year;
-	uint8_t month;
-	uint8_t day;
-
-	static Date FromString(const std::string& str);
-	static Date Today();
-	static std::string DateTimestamp();
-
-	std::string ToString(const char delim = '-') const;
-	bool IsUnassigned() const { return year == 0; }
-
-	bool operator==(const Date& other);
-	bool operator!=(const Date& other);
-};
+#include "Date.h"
 
 struct Entry
 {

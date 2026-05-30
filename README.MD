@@ -1,11 +1,12 @@
+# Time Card by Jon "Xepherin" Bogert (jonbogert@gmail.com) -- README
 
-#include <iostream>
-#include <string>
+A command line timecard management application
 
-void Help()
-{
-    std::string contents = R"(TimeCard -- Help
+# Usage
 
+As shown with `--help` command
+
+```
 Usage: tc <task> <flags>
 
 Tasks:
@@ -28,8 +29,13 @@ Times can be entered in the following format:
     16:30   | 24-hour with minute
     4.5p    | 12-hr decimal time (also without decimal)
     4:30p   | 12-hr with minutes
+```
 
-)";
+# Dependancies
+The following libraries are required. Static libraries are included for Visual Studio on Windows
+  - [yaml-cpp](https://github.com/jbeder/yaml-cpp) by jbeder
+  - [CPP-DateTime-library](https://github.com/jeremydumais/CPP-DateTime-library) by jeremydumais (source code)
 
-    std::cout << contents;
-}
+# Repository Info
+
+This repository uses the [premake5](https://premake.github.io/) build system. Execute `build-vs2022.bat` to generate a Visual Studio 2022 solution. This project currently only supports Windows.

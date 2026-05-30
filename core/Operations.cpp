@@ -7,6 +7,56 @@
 
 #include <iostream>
 #include <fstream>
+#include <ctime>
+#include <set>
+
+bool s_timeSeeded = false;
+
+static void ProjectDates(std::vector<Date>& dates, const char* startDate, const char* endDate)
+{
+	Date projStart{};
+	Date projEnd{};
+
+	try
+	{
+		projStart = Date::FromString(startDate);
+		projEnd = Date::FromString(endDate);
+	}
+	catch (std::exception)
+	{
+		std::cout << "Error -- Could not parse dates. Make sure dates are in 'YYYY-MM-DD' format";
+		return;
+	}
+	if (projStart > projEnd)
+	{
+		Date tmp = projStart;
+		projStart = projEnd;
+		projEnd = tmp;
+	}
+
+	if (!s_timeSeeded)
+	{
+		s_timeSeeded = true;
+		srand(time(NULL));
+	}
+
+	int daysBtwn = projStart.DaysBetween(projEnd);
+	std::set<int> rangeDays;
+	for (size_t i = 0; i < dates.size(); ++i)
+	{
+		int val = 0;
+		do
+		{
+			val = rand() % (daysBtwn + 1);
+		} while (rangeDays.find(val) != rangeDays.end());
+		rangeDays.insert(val);
+	}
+	size_t index = 0;
+	for (int val : rangeDays)
+	{
+		dates[index++] = projStart + val;
+	}
+}
 
 void Op::Add(Timecard& timecard, Config& config, int argc, char** argv)
 {
@@ -166,7 +216,7 @@ void Op::PeriodStart(Timecard& timecard, Config& config)
 	std::cout << "New pay period added." << std::endl;
 }
 
-void Op::PeriodCalc(const Timecard& timecard, const Config& config)
+void Op::PeriodCalc(const Timecard& timecard, const Config& config, int argc, char** argv)
 {
 	if (config.periodIndex < 0 || config.periodIndex >= timecard.GetPeriodCount())
 	{
@@ -182,7 +232,65 @@ void Op::PeriodCalc(const Timecard& timecard, const Config& config)
 	std::vector<float> hours;
 	std::vector<float> pay;
 
-	for (size_t i = 0; i < period.entries.size(); ++i)
+	size_t startIndex = 0;
+	size_t entryMax = period.entries.size();
+
+	for (int i = 3; i < argc; ++i)
+	{
+		size_t start = 0;
+		size_t max = 0;
+		if (strcmp(argv[i], "-r") == 0
+			|| strcmp(argv[i], "--range") == 0)
+		{
+			if (i + 1 >= argc)
+			{
+				std::cout << "Error -- 'Range' flag is missing arguments" << std::endl;
+				break;
+			}
+
+			try
+			{
+				start = std::stoi(argv[i + 1]);
+			}
+			catch (std::exception)
+			{
+				std::cout << "Error -- Could not parse range start index as integer" << std::endl;
+				break;
+			}
+			if (start >= period.entries.size())
+			{
+				std::cout << "Error -- Range start index out of range" << std::endl;
+				break;
+			}
+
+			if (i + 2 >= argc)
+			{
+				max = period.entries.size();
+			}
+			else
+			{
+				try
+				{
+					max = start + std::stoi(argv[i + 2]);
+				}
+				catch (std::exception)
+				{
+					max = period.entries.size();
+				}
+
+				if (max > period.entries.size() || max <= start)
+				{
+					std::cout << "Error -- Range count is out of range" << std::endl;
+					break;
+				}
+			}
+			startIndex = start;
+			entryMax = max;
+			break;
+		}
+	}
+
+	for (size_t i = startIndex; i < entryMax; ++i)
 	{
 		const Entry& entry = period.entries[i];
 		if (dates.empty() || dates.back() != entry.date)
@@ -197,6 +305,24 @@ void Op::PeriodCalc(const Timecard& timecard, const Config& config)
 		pay.back() += span * config.payRate;
 
 		totalHours += span;
+	}
+	
+
+	for (int i = 3; i < argc; ++i)
+	{
+		if (strcmp(argv[i], "-p") == 0
+			|| strcmp(argv[i], "--proj") == 0
+			|| strcmp(argv[i], "--project") == 0)
+		{
+			if (i + 2 >= argc)
+			{
+				std::cout << "Error -- 'Project' flag is missing arguments" << std::endl;
+				break;
+			}
+
+			ProjectDates(dates, argv[i + 1], argv[i + 2]);
+			break;
+		}
 	}
 
 	float totalPay = totalHours * config.payRate;
