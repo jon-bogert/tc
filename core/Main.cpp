@@ -6,7 +6,7 @@
 #include "Timecard.h"
 #include "Operations.h"
 
-#define VER_NUM "1.0.1"
+#define VER_NUM "1.0.2"
 
 int main (int argc, char* argv[])
 {

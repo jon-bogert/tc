@@ -85,7 +85,7 @@ void Op::PeriodList(const Timecard& timecard)
 
 void Op::PeriodSet(const std::string& to, const Timecard& timecard, Config& config)
 {
-	size_t count = timecard.GetPeriodCount();
+	int count = (int)timecard.GetPeriodCount();
 
 	if (count == 0)
 	{
@@ -95,14 +95,14 @@ void Op::PeriodSet(const std::string& to, const Timecard& timecard, Config& conf
 
 	if (to == "latest")
 	{
-		size_t index = count - 1;
+		int index = count - 1;
 		config.periodIndex = index;
 		std::cout << "Setting period index to: " << index << std::endl;
 		config.Save();
 		return;
 	}
 
-	int index = -1;
+	int index = 0;
 	try
 	{
 		index = std::stoi(to);
@@ -113,10 +113,15 @@ void Op::PeriodSet(const std::string& to, const Timecard& timecard, Config& conf
 		return;
 	}
 
-	if (index < 0 || index >= count)
+	if (index >= count || index <= -count)
 	{
 		std::cout << "Provided index was out of range, see `tc period list`\n";
 		return;
+	}
+
+	if (index < 0)
+	{
+		index = count - 1 + index;
 	}
 
 	config.periodIndex = index;

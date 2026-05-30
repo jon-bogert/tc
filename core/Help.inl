@@ -13,7 +13,7 @@ Tasks:
 ================================|===============================================================
     add <start> <end> "Note"    | Add an entry to the current period on today's date
 ================================|===============================================================
-    period set <index|"latest"> | set period to index
+    period set <index|"latest"> | set period to index (negative index counts back from latest)
     period list                 | list all periods with date ranges
     period start                | starts a new period on today's date
     period show                 | shows all entries in current period
