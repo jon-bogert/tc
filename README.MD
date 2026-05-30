@@ -1,4 +1,4 @@
-# Time Card by Jon "Xepherin" Bogert (jonbogert@gmail.com) -- README
+# Time Card -- README
 
 A command line timecard management application
 
